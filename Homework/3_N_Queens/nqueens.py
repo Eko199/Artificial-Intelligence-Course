@@ -1,9 +1,20 @@
+import argparse
 import os
 import random
 import time
 
 def knight_init_board(n: int) -> list[int]:
     return list(range(1, n, 2)) + list(range(0, n, 2))
+
+def knight_init_board2(n: int) -> list[int]:
+    base = n
+    while base % 6 in (2, 3):
+        base -= 1
+    return list(range(1, base, 2)) + list(range(0, base, 2)) + list(range(base, n))
+
+def print_board(queens_rows, n):
+    for row in queens_rows:
+        print(" ".join(["_" if i != row else "*" for i in range(n)]))
 
 def main():
     n = int(input())
@@ -16,7 +27,7 @@ def main():
         print(-1)
         return
 
-    queens_rows: list[int] = knight_init_board(n)
+    queens_rows: list[int] = knight_init_board2(n)
     queens_per_col = [1] * n
     queens_per_d1 = [0] * (2 * n - 1)
     queens_per_d2 = [0] * (2 * n - 1)
@@ -91,9 +102,15 @@ def main():
 
     time_only = os.getenv("FMI_TIME_ONLY")
     if not time_only or time_only != "1":
-        # queens_cols = [row for row, _ in sorted(enumerate(queens_rows), key=lambda rowcol: rowcol[1])]
-        # print(queens_cols)
-        print(queens_rows)
+        queens_cols = [row for row, _ in sorted(enumerate(queens_rows), key=lambda rowcol: rowcol[1])]
+        print(queens_cols)
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-p', action='store_true')
+    args = parser.parse_args()
+
+    if args.p:
+        print_board(queens_rows, n)
 
 if __name__ == "__main__":
     main()
