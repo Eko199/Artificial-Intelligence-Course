@@ -31,25 +31,27 @@ def main():
     queens_per_col = [1] * n
     queens_per_d1 = [0] * (2 * n - 1)
     queens_per_d2 = [0] * (2 * n - 1)
+    NMinus1 = n - 1
 
     for row, col in enumerate(queens_rows):
-        queens_per_d1[row - col + n - 1] += 1
+        queens_per_d1[row - col + NMinus1] += 1
         queens_per_d2[row + col] += 1
+
+    MaxIterations = max(10000, n)
 
     while True:
         i = 0
-        while i < max(10000, n):
+        while i < MaxIterations:
             max_conflicts = 0
             conflicting_queens = []
 
             for row, col in enumerate(queens_rows):
-                conflicts = queens_per_col[col] - 1 + queens_per_d1[row - col + n - 1] - 1 + queens_per_d2[row + col] - 1
+                conflicts = queens_per_col[col] + queens_per_d1[row - col + NMinus1] + queens_per_d2[row + col] - 3
 
-                if conflicts >= max_conflicts:
-                    if conflicts > max_conflicts:
-                        conflicting_queens = []
-                        max_conflicts = conflicts
-
+                if conflicts > max_conflicts:
+                    conflicting_queens = [row]
+                    max_conflicts = conflicts
+                elif conflicts == max_conflicts:
                     conflicting_queens.append(row)
 
             if max_conflicts == 0:
@@ -65,13 +67,12 @@ def main():
                 if new_col == curr_col:
                     continue
 
-                conflicts = queens_per_col[new_col] + queens_per_d1[conflicting_queen - new_col + n - 1] + queens_per_d2[conflicting_queen + new_col]
+                conflicts = queens_per_col[new_col] + queens_per_d1[conflicting_queen - new_col + NMinus1] + queens_per_d2[conflicting_queen + new_col]
 
-                if conflicts <= min_conflicts:
-                    if conflicts < min_conflicts:
-                        best_cols = []
-                        min_conflicts = conflicts
-
+                if conflicts < min_conflicts:
+                    best_cols = [new_col]
+                    min_conflicts = conflicts
+                elif conflicts == min_conflicts:
                     best_cols.append(new_col)
 
             best_col = best_cols[int(random.random() * len(best_cols))]
@@ -79,13 +80,13 @@ def main():
             queens_rows[conflicting_queen] = best_col
             queens_per_col[curr_col] -= 1
             queens_per_col[best_col] += 1
-            queens_per_d1[conflicting_queen - curr_col + n - 1] -= 1
-            queens_per_d1[conflicting_queen - best_col + n - 1] += 1
+            queens_per_d1[conflicting_queen - curr_col + NMinus1] -= 1
+            queens_per_d1[conflicting_queen - best_col + NMinus1] += 1
             queens_per_d2[conflicting_queen + curr_col] -= 1
             queens_per_d2[conflicting_queen + best_col] += 1
             i += 1
 
-        if i < max(10000, n):
+        if i < MaxIterations:
             break
 
         queens_rows = knight_init_board(n)
@@ -94,7 +95,7 @@ def main():
         queens_per_d2 = [0] * (2 * n - 1)
     
         for row, col in enumerate(queens_rows):
-            queens_per_d1[row - col + n - 1] += 1
+            queens_per_d1[row - col + NMinus1] += 1
             queens_per_d2[row + col] += 1
 
     length: float = (time.perf_counter() - start) * 1000
