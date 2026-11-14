@@ -6,11 +6,11 @@ import time
 def knight_init_board(n: int) -> list[int]:
     return list(range(1, n, 2)) + list(range(0, n, 2))
 
-def knight_init_board2(n: int) -> list[int]:
-    base = n
-    while base % 6 in (2, 3):
-        base -= 1
-    return list(range(1, base, 2)) + list(range(0, base, 2)) + list(range(base, n))
+# def knight_init_board2(n: int) -> list[int]:
+#     base = n
+#     while base % 6 in (2, 3):
+#         base -= 1
+#     return list(range(1, base, 2)) + list(range(0, base, 2)) + list(range(base, n))
 
 def print_board(queens_rows, n):
     for row in queens_rows:
@@ -27,7 +27,7 @@ def main():
         print(-1)
         return
 
-    queens_rows: list[int] = knight_init_board2(n)
+    queens_rows: list[int] = knight_init_board(n)
     queens_per_col = [1] * n
     queens_per_d1 = [0] * (2 * n - 1)
     queens_per_d2 = [0] * (2 * n - 1)
@@ -57,7 +57,7 @@ def main():
             if max_conflicts == 0:
                 break
 
-            conflicting_queen = conflicting_queens[int(random.random() * len(conflicting_queens))]
+            conflicting_queen = random.choice(conflicting_queens)
             curr_col = queens_rows[conflicting_queen]
 
             min_conflicts = n
@@ -75,7 +75,7 @@ def main():
                 elif conflicts == min_conflicts:
                     best_cols.append(new_col)
 
-            best_col = best_cols[int(random.random() * len(best_cols))]
+            best_col = random.choice(best_cols)
 
             queens_rows[conflicting_queen] = best_col
             queens_per_col[curr_col] -= 1
